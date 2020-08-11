@@ -1,5 +1,5 @@
 #include "stdio.h"
-#include "CountDownLatch.h"
+#include "thread/CountDownLatch.h"
 #include <pthread.h>
 #include <iostream>
 

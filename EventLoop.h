@@ -5,8 +5,8 @@
 #include <assert.h>
 
 #include "utils/nocopyable.h"
-#include "utils/CurrentThread.h"
-#include "utils/Thread.h"
+#include "thread/CurrentThread.h"
+#include "thread/Thread.h"
 
 #include "Channel.h"
 

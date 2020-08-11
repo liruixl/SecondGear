@@ -1,5 +1,6 @@
 #include "EventLoop.h"
 #include "Channel.h"
+#include "TimerQueue.h"
 #include <functional>
 #include <iostream>
 
@@ -8,61 +9,26 @@
 #include <sys/timerfd.h>
 #include <string.h> //bzero
 
+
+void test()
+{
+
+    std::cout << "[test] : test timerQueue" << std::endl;
+
+}
+
 using namespace std;
-
-EventLoop* g_loop;
-
-void timeout()
-{
-    printf("Timeout\n");
-    g_loop->quit();
-}
-
-void itoa(long int value, char * str)
-{
-    char cstr[32];
-
-    int len = 0;
-    char * cur = cstr;
-    while(value)
-    {
-        int yushu = value % 10;
-        value = value / 10;
-
-        (*cur++) = '0' +  yushu;
-        len++;
-    }
-
-    char * r = str;
-    while(len--)
-    {
-        (*r++) = (*--cur);
-    }
-}
 
 int main()
 {
     
     EventLoop loop;
-    g_loop = &loop;
 
-    int timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
-    
-    ChannelPtr channel = std::make_shared<Channel>(&loop, timerfd);
-    channel->setReadCallBack(timeout);
-    channel->enableReading();
+    TimerQueue timerQue(&loop);
+    timerQue.addTimer(test, addTime(Timestamp::now(), 3.0), 3);
+    timerQue.addTimer(test, addTime(Timestamp::now(), 3.0), 0);
+    timerQue.addTimer(test, addTime(Timestamp::now(), 5.0), 0);
 
-    struct itimerspec howlong;
-    bzero(&howlong, sizeof howlong);
-    howlong.it_value.tv_sec = 3;
-
-    timerfd_settime(timerfd, 0, &howlong, NULL);
-
-    loop.loop(); //用户看不到poll或者epoll_wait
-
-    close(timerfd);
-
-
-
+    loop.loop();
     return 0;
 }

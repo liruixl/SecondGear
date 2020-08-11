@@ -27,16 +27,21 @@ string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
 
-include_directories(${PROJECT_SOURCE_DIR}/utils)
+include_directories(${PROJECT_SOURCE_DIR}/utils 
+                    ${PROJECT_SOURCE_DIR}/thread
+                    ${PROJECT_SOURCE_DIR}/time)
 
 set (SRCS 
-    utils/CountDownLatch.cpp
-    utils/Thread.cpp
+    thread/CountDownLatch.cpp
+    thread/Thread.cpp
+    time/Timestamp.cpp
+    time/Timer.cpp
     )
 
 set (SRCS ${SRCS}
     Channel.cpp
     Poller.cpp
+    TimerQueue.cpp
     EventLoop.cpp
     )
 

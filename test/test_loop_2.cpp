@@ -1,6 +1,6 @@
 #include "stdio.h"
-#include "utils/CountDownLatch.h"
-#include "utils/Thread.h"
+#include "thread/CountDownLatch.h"
+#include "thread/Thread.h"
 
 #include "EventLoop.h"
 #include <functional>
