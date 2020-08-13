@@ -20,7 +20,6 @@
 #include "time/Timer.h"
 #include "time/TimerId.h"
 
-
 #include "Channel.h"
 
 class EventLoop;
@@ -39,6 +38,8 @@ public:
     TimerId addTimer(const TimerCallBack& cb, Timestamp when, double interval);
     //void cancel(TimerId timerId); //如何取消定时任务
 private:
+    void addTimerInLoop(TimerPtr timer);
+
     //called when timerfd alarms
     void handleRead();
     std::vector<Entry> getExpired(Timestamp now);

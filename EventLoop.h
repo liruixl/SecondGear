@@ -40,6 +40,9 @@ public:
     ///?那如果既不加锁并且只能在IO线程调用?
     ///只能将TimerQueue::addTimer移动到IO线程进行回调====>runInLoop
     ///
+    ///addTimer 将 addTimerInLoop 移动到IO线程调用
+    ///这样无论哪个线程调用addTIimer都是安全的了
+    ///
     TimerId runAt(const Timestamp& time, const TimerCallback& cb);
     TimerId runAfter(double delay, const TimerCallback& cb);
     TimerId runEvery(double interval, const TimerCallback& cb);
@@ -76,7 +79,7 @@ private:
     ///
     bool callingPendingFunctors_; /*atomic what to do? 有竞态嘛*/
     int wakeupFd_;
-    ChannelUPtr wakeupChannel_; //Unlike TimerQueue that don't expose Channel to clien
+    ChannelPtr wakeupChannel_; //Unlike TimerQueue that don't expose Channel to clien
 
     MutexLock mutex_;
     std::vector<Functor> pendingFunctors; //thread safe mutex

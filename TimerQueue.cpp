@@ -44,7 +44,7 @@ void readTimerfd(int timerfd, Timestamp now)
     uint64_t howmany;
     //可以用read函数读取计时器的超时次数，该值是一个8字节无符号的长整型
     ssize_t n = ::read(timerfd, &howmany, sizeof howmany);
-    std::cout << "TimerQueue::handleRead() " << howmany << " at " << now.toString() << std::endl;
+    std::cout << "TimerQueue::handleRead() read " << howmany << " at " << now.toString() << std::endl;
     if (n != sizeof howmany)
     {
         std::cout << "TimerQueue::handleRead() reads " << n << " bytes instead of 8" << std::endl;;
@@ -89,11 +89,23 @@ TimerQueue::~TimerQueue()
 
 TimerId TimerQueue::addTimer(const TimerCallBack& cb, Timestamp when, double interval)
 {
-    loop_->assertInLoopThread();
     //C++14
     //TimerUPtr timer = std::make_unique<Timer>(cb, when, interval);
     TimerPtr timer(new Timer(cb,when,interval));
     TimerId timerid(timer.get());
+
+    auto moveAddTimerToIO = [&](){
+        this->addTimerInLoop(timer);
+    };
+    
+    loop_->runInLoop(moveAddTimerToIO);
+
+    return timerid;
+}
+
+void TimerQueue::addTimerInLoop(TimerPtr timer)
+{
+    loop_->assertInLoopThread();
 
     bool earliestChanged = insert(timer); //std::move(timer)段错误
 
@@ -102,16 +114,13 @@ TimerId TimerQueue::addTimer(const TimerCallBack& cb, Timestamp when, double int
     //或者不用定时，只在循环的最后处理超时事件
     if (earliestChanged)
     {
-        resetTimerfd(timerfd_, timer->expiration()); //段错误发生在这里
+        resetTimerfd(timerfd_, timer->expiration()); //段错误发生在这里timer被move
     }
-
-    return timerid;
 }
 
 
 void TimerQueue::handleRead()
 {
-    printf("TimerQueue::handleRead\n");
     loop_->assertInLoopThread();
     Timestamp now(Timestamp::now());
     readTimerfd(timerfd_, now);

@@ -78,9 +78,12 @@ void EventLoop::loop()
         {
             (*it)->handleEvent();
         }
+
+        doPendingFunctors();
+
     }
 
-    doPendingFunctors();
+    //doPendingFunctors(); //wo tnd fang zhe le
 
     printf("EventLoop %p stop looping\n", this);
     looping_ = false;
@@ -95,6 +98,10 @@ void EventLoop::quit()
 {
     quit_ = true;
     //wakeup();
+    if(!isInLoopThread())
+    {
+        wakeup();
+    }
 }
 
 void EventLoop::updateChannel(ChannelPtr channel)
@@ -181,7 +188,7 @@ void EventLoop::doPendingFunctors()
         functors.swap(pendingFunctors);
     }
 
-    for(int i = 0; i < functors.size(); i++)
+    for(int i = 0; i < static_cast<int>(functors.size()); i++)
     {
         functors[i]();
     }
