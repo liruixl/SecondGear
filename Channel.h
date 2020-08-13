@@ -62,4 +62,5 @@ private:
 };
 
 using ChannelPtr = std::shared_ptr<Channel>;
+using ChannelUPtr = std::unique_ptr<Channel>;
 using ChannelPtrVec = std::vector<ChannelPtr>;

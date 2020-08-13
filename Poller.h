@@ -36,7 +36,7 @@ private:
     ChannelPtrVec getActiveChannels(int numEvents); //ready fd
     
     EventLoop* ownerloop_;
-    std::vector<struct pollfd> pollfds_; //cache poollfd* and save result
+    std::vector<struct pollfd> pollfds_; //cache poollfd*
     //std::vector<epoll_event> events_;
 
     //fd to Channelobj
