@@ -18,6 +18,8 @@ public:
     using EventCallBack = std::function<void()>;
 
     Channel(EventLoop* loop, int fd);
+    Channel(const Channel&) = delete;
+    Channel& operator=(const Channel&) = delete;
 
     void handleEvent();
     void setReadCallBack(const EventCallBack& cb)
