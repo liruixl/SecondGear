@@ -12,6 +12,7 @@ public:
     ///那端口、地址族呢：端口就是INADDR_ANY，地址族都是AF_INET
     ///注意输入是【主机字节序】
     explicit InetAddress(uint16_t port);
+    
     InetAddress(const std::string& ip, uint16_t port);
 
     /// Constructs an endpoint with given struct @c sockaddr_in

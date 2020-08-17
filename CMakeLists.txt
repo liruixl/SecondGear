@@ -36,6 +36,9 @@ set (SRCS
     thread/Thread.cpp
     time/Timestamp.cpp
     time/Timer.cpp
+    net/InetAddress.cpp
+    net/SocketsOps.cpp
+    net/Socket.cpp
     )
 
 set (SRCS ${SRCS}
@@ -43,6 +46,7 @@ set (SRCS ${SRCS}
     Poller.cpp
     TimerQueue.cpp
     EventLoop.cpp
+    Acceptor.cpp
     )
 
 add_executable(main main.cpp ${SRCS})
