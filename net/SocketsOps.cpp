@@ -168,3 +168,16 @@ void sockets::fromHostPort(const char* ip, uint16_t port, struct sockaddr_in* ad
     abort();
   }
 }
+
+struct sockaddr_in sockets::getLocalAddr(int sockfd)
+{
+  struct sockaddr_in localaddr;
+  bzero(&localaddr, sizeof localaddr);
+  socklen_t addrlen = sizeof(localaddr);
+  if (::getsockname(sockfd, sockaddr_cast(&localaddr), &addrlen) < 0)
+  {
+    std::cout << "sockets::getLocalAddr";
+    abort();
+  }
+  return localaddr;
+}

@@ -36,11 +36,10 @@ private:
     ChannelPtrVec getActiveChannels(int numEvents); //ready fd
     
     EventLoop* ownerloop_;
-    std::vector<struct pollfd> pollfds_; //cache poollfd*
+    std::vector<struct pollfd> pollfds_;  //cache poollfd*
     //std::vector<epoll_event> events_;
 
     //fd to Channelobj
     //can be a vector(MAXFDS), 空间换时间, O(1) 插入删除
     std::map<int, ChannelPtr> channels_;
-
 };

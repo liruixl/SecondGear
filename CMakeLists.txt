@@ -47,6 +47,8 @@ set (SRCS ${SRCS}
     TimerQueue.cpp
     EventLoop.cpp
     Acceptor.cpp
+    TcpConnection.cpp
+    TcpServer.cpp
     )
 
 add_executable(main main.cpp ${SRCS})
