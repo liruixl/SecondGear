@@ -13,8 +13,16 @@ Channel::Channel(EventLoop* loop, int fd)
 fd_(fd),
 events_(0),
 revents_(0),
-index_(-1)
+index_(-1),
+eventHandling_(false)
 { }
+
+
+Channel::~Channel()
+{
+    assert(!eventHandling_);
+}
+
 
 //Channel.h未包含EventLoop.h
 //必须定义在这
@@ -27,10 +35,18 @@ void Channel::update()
 
 void Channel::handleEvent()
 {
+    eventHandling_ = true;
+
     if(revents_ & POLLNVAL)
     {
         printf("Channel::handleEvent() POLLNVAL.\n");
     }
+
+    if ((revents_ & POLLHUP) && !(revents_ & POLLIN)) {
+        std::cout << "Channel::handle_event() POLLHUP" << std::endl;
+        if (closeCallback_) closeCallback_();
+    }
+
     if(revents_ & (POLLERR | POLLNVAL))
     {
         if(errorCallback) errorCallback();
@@ -43,4 +59,6 @@ void Channel::handleEvent()
     {
         if(writeCallback) writeCallback();
     }
+
+    eventHandling_ = false;
 }

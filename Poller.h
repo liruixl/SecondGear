@@ -26,7 +26,7 @@ public:
 
     //Must be called in the loop thread
     void updateChannel(ChannelPtr channel); //for Poller
-    //void removeChannel(ChannelPtr channel);
+    void removeChannel(ChannelPtr channel);
 
 
     void assertInLoopThread() { ownerloop_->assertInLoopThread(); }

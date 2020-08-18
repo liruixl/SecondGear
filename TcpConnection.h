@@ -31,21 +31,29 @@ public:
 
     void setConnectionCallback(const ConnectionCallback& cb)
     { connectionCallback_ = cb; }
-
     void setMessageCallback(const MessageCallback& cb)
     { messageCallback_ = cb; }
+    void setCloseCallback(const CloseCallback& cb)
+    { closeCallback_ = cb; }
 
     /// Internal use only.
 
     // called when TcpServer accepts a new connection
     void connectEstablished();   // should be called only once
+    //
+    // called when TcpServer has removed me from its map
+    // 析构前调用的最后一个函数，通知用户连接断开
+    void connectDestroyed();  // should be called only once
 
 private:
     //ing与ed的状态在于是否已经将connfd注册到poll/epoll中
-    enum StateE {kConnecting, kConnected, };
+    enum StateE {kConnecting, kConnected, kDisconnected};
 
     void setState(StateE s) { state_ = s; }
     void handleRead();
+    void handleWrite();
+    void handleClose(); //调用closecallback, 此回调绑定到TcpServer::removeConnection()
+    void handleError(); //不关闭连接，由Socket RAII管理
 
 private:
     EventLoop* loop_;
@@ -60,6 +68,7 @@ private:
 
 
     //这两个是干什么的，由TCPServer传递过来
-    ConnectionCallback connectionCallback_;  //？ 主动调用connectEstablished
+    ConnectionCallback connectionCallback_;  //？ 主动调用connectEstablished ? 连接建立和断开都调用
     MessageCallback messageCallback_;  //connfd读事件 即message到来
+    CloseCallback closeCallback_;
 };

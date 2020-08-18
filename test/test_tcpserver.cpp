@@ -34,8 +34,6 @@ void onMessage(const TcpConnectionPtr& conn,
 
 int main()
 {
-    printf("main(): pid = %d\n", getpid());
-    
     EventLoop loop;
 
 
@@ -45,6 +43,7 @@ int main()
     server.setConnectionCallback(onConnection);
     server.setMessageCallback(onMessage);
 
+    server.start();
     server.start();
     loop.loop();
 }

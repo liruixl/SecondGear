@@ -82,9 +82,37 @@ void TcpServer::newConnection(int connSockfd, const InetAddress& peerAddr)
 
     TcpConnectionPtr conn = 
         std::make_shared<TcpConnection>(loop_, connName, connSockfd, localAddr, peerAddr);
-        
+
     connections_[connName] = conn;
     conn->setConnectionCallback(connectionCallback_);
     conn->setMessageCallback(messageCallback_);
+
+    auto closeCallbackToRemove = [this](const TcpConnectionPtr& conn){
+        removeConnection(conn);
+    };
+
+    conn->setCloseCallback(closeCallbackToRemove);
     conn->connectEstablished();
+}
+
+///
+///从TcpServer列表里移除
+///从loop Poller中移除
+///
+void TcpServer::removeConnection(const TcpConnectionPtr& conn)
+{
+    loop_->assertInLoopThread();
+    std::cout << "TcpServer::removeConnection [" << name_
+            << "] - connection " << conn->name() << std::endl;
+    size_t n = connections_.erase(conn->name());
+    assert(n == 1); (void)n;
+
+    auto connectedDestroyed = [conn](){
+        conn->connectDestroyed();
+    };
+    //???????????????????????????????????
+    //这里为什么要 queueInloop啊?本来就是在IO线程啊
+    loop_->queueInLoop(connectedDestroyed);
+    // loop_->queueInLoop(
+    //     std::bind(&TcpConnection::connectDestroyed, conn));
 }

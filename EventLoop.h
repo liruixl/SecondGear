@@ -30,6 +30,7 @@ public:
 
     void quit();
     void updateChannel(ChannelPtr channel);
+    void removeChannel(ChannelPtr channel);
 
 
     ///

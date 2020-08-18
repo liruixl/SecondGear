@@ -83,7 +83,7 @@ void EventLoop::loop()
 
     }
 
-    //doPendingFunctors(); //wo tnd fang zhe le
+    //doPendingFunctors(); //wo tmd fang zhe le
 
     printf("EventLoop %p stop looping\n", this);
     looping_ = false;
@@ -111,6 +111,12 @@ void EventLoop::updateChannel(ChannelPtr channel)
     poller_->updateChannel(channel);
 }
 
+void EventLoop::removeChannel(ChannelPtr channel)
+{
+    assert(channel->ownerLoop() == this);
+    assertInLoopThread();
+    poller_->removeChannel(channel);
+}
 
 TimerId EventLoop::runAt(const Timestamp& time, const TimerCallback& cb)
 {
