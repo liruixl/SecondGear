@@ -57,4 +57,6 @@ void fromHostPort(const char* ip, uint16_t port,
 struct sockaddr_in getLocalAddr(int sockfd);
 int getSocketError(int sockfd);
 
+void shutdownWrite(int sockfd);
+
 }//namespace sockets

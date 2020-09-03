@@ -4,6 +4,7 @@
 
 #include "net/InetAddress.h"
 #include "utils/Callbacks.h"
+#include "Buffer.h"
 
 class EventLoop;
 class Socket;
@@ -29,6 +30,12 @@ public:
     const InetAddress& peerAddress() { return peerAddr_; }
     bool connected() const { return state_ == kConnected; }
 
+    //void send(const void* message, size_t len);
+    // Thread safe.
+    void send(const std::string& message);
+    // Thread safe.
+    void shutdown();
+
     void setConnectionCallback(const ConnectionCallback& cb)
     { connectionCallback_ = cb; }
     void setMessageCallback(const MessageCallback& cb)
@@ -47,13 +54,16 @@ public:
 
 private:
     //ing与ed的状态在于是否已经将connfd注册到poll/epoll中
-    enum StateE {kConnecting, kConnected, kDisconnected};
+    enum StateE {kConnecting, kConnected, kDisconnecting , kDisconnected, };
 
     void setState(StateE s) { state_ = s; }
-    void handleRead();
+    void handleRead(Timestamp receiveTime);
     void handleWrite();
     void handleClose(); //调用closecallback, 此回调绑定到TcpServer::removeConnection()
     void handleError(); //不关闭连接，由Socket RAII管理
+
+    void sendInLoop(const std::string& message);
+    void shutdownInLoop();
 
 private:
     EventLoop* loop_;
@@ -71,4 +81,7 @@ private:
     ConnectionCallback connectionCallback_;  //？ 主动调用connectEstablished ? 连接建立和断开都调用
     MessageCallback messageCallback_;  //connfd读事件 即message到来
     CloseCallback closeCallback_;
+
+    Buffer inputBuffer_;
+    Buffer outputBuffer_;
 };

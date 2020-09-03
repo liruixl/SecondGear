@@ -1,13 +1,14 @@
-#include "TcpServer.h"
+#include "Channel.h"
 #include "EventLoop.h"
-#include "net/InetAddress.h"
 #include "TcpConnection.h"
+#include "TcpServer.h"
+
 #include <stdio.h>
+#include <sys/timerfd.h>
+#include <memory>
+#include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
-
-
-std::string message1;
-std::string message2;
 
 void onConnection(const TcpConnectionPtr& conn)
 {
@@ -16,8 +17,6 @@ void onConnection(const TcpConnectionPtr& conn)
     printf("onConnection(): new connection [%s] from %s\n",
            conn->name().c_str(),
            conn->peerAddress().toHostPort().c_str());
-    conn->send(message1);
-    conn->send(message2);
   }
   else
   {
@@ -35,26 +34,12 @@ void onMessage(const TcpConnectionPtr& conn,
          conn->name().c_str(),
          receiveTime.toFormattedString().c_str());
 
-  buf->retrieveAll();
+  printf("onMessage(): [%s]\n", buf->retrieveAsString().c_str());
 }
 
-int main(int argc, char* argv[])
+int main()
 {
   printf("main(): pid = %d\n", getpid());
-
-  int len1 = 10;
-  int len2 = 20;
-
-  if (argc > 2)
-  {
-    len1 = atoi(argv[1]);
-    len2 = atoi(argv[2]);
-  }
-
-  message1.resize(len1);
-  message2.resize(len2);
-  std::fill(message1.begin(), message1.end(), 'A');
-  std::fill(message2.begin(), message2.end(), 'B');
 
   InetAddress listenAddr(9981);
   EventLoop loop;

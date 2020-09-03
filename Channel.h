@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "../time/Timestamp.h"
+
 class EventLoop;
 
 ////
@@ -16,14 +18,16 @@ class Channel : public std::enable_shared_from_this<Channel>
 {
 public:
     using EventCallBack = std::function<void()>;
+    using ReadEventCallback = std::function<void(Timestamp)>;
 
     Channel(EventLoop* loop, int fd);
     ~Channel();
     Channel(const Channel&) = delete;
     Channel& operator=(const Channel&) = delete;
 
-    void handleEvent();
-    void setReadCallBack(const EventCallBack& cb)
+    //void handleEvent();
+    void handleEvent(Timestamp receiveTime);
+    void setReadCallBack(const ReadEventCallback& cb)
     { readCallback = cb; }
     void setWriteCallBack(const EventCallBack& cb)
     { writeCallback = cb; }
@@ -40,8 +44,9 @@ public:
 
     void enableReading() { events_ = kReadEvent; update(); }
     void enableWriting() { events_ = kWriteEvent; update(); }
-    void disableWrite() { events_ &= ~kWriteEvent; update(); }
+    void disableWriting() { events_ &= ~kWriteEvent; update(); }
     void disableAll() { events_ =kNoneEvent; update(); }
+    bool isWriting() const {return events_ & kWriteEvent; }
 
     //for Poller
     int index() { return index_; }
@@ -63,7 +68,7 @@ private:
 
     bool eventHandling_;
 
-    EventCallBack readCallback;
+    ReadEventCallback readCallback;
     EventCallBack writeCallback;
     EventCallBack errorCallback;
     EventCallBack closeCallback_;

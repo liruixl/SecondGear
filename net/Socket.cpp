@@ -41,3 +41,8 @@ void Socket::setReuseAddr(bool on)
                 &optval, sizeof optval);
     // FIXME CHECK
 }
+
+void Socket::shutdownWrite()
+{
+    sockets::shutdownWrite(sockfd_);
+}

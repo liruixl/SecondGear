@@ -47,6 +47,7 @@ set (SRCS ${SRCS}
     TimerQueue.cpp
     EventLoop.cpp
     Acceptor.cpp
+    Buffer.cpp
     TcpConnection.cpp
     TcpServer.cpp
     )

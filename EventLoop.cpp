@@ -76,7 +76,7 @@ void EventLoop::loop()
 
         for(auto it = activeChannels_.begin(); it != activeChannels_.end(); ++it)
         {
-            (*it)->handleEvent();
+            (*it)->handleEvent(Timestamp::now());
         }
 
         doPendingFunctors();

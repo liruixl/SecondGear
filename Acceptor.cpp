@@ -15,7 +15,7 @@ listenning_(false)
     acceptSocket_.setReuseAddr(true);
     acceptSocket_.bindAddress(listenAddr);
 
-    auto listenfdReadCallback = [this](){
+    auto listenfdReadCallback = [this](Timestamp t){
         this->handleRead();
     };
     acceptChannel_->setReadCallBack(listenfdReadCallback);
